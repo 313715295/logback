@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<configuration>
+    <property name="CONSOLE_LOG_PATTERN"
+              value="%d{yyyy-MM-dd-HH:mm:ss.SSS} | %highlight(%-5level) | %boldMagenta(${PID:- }) | [%15.15t] | %cyan(%-40.40logger{39}) |-->> %m%n"/>
+
+    <property name="FILE_LOG_PATTERN"
+              value="%d{yyyy-MM-dd-HH:mm:ss.SSS} | %-5level ${PID:- } | [%15.15t] %-40.40logger{39} |-->>%m%n"/>
+
+    <!--采用环境变量配置的时候需要注意必须为/,如果写成\ 不会识别为路径，而是当成文件名-->
+    <property name="INFO_LOG_PATH" value="F:/idea-workspace/practice/logback/info.%d.log"/>
+    <property name="ERROR_LOG_PATH" value="F:/idea-workspace/practice/logback/error.%d.log"/>
+
+    <appender name="consoleLog" class="ch.qos.logback.core.ConsoleAppender">
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <pattern>
+               ${CONSOLE_LOG_PATTERN}
+            </pattern>
+        </layout>
+    </appender>
+
+    <appender name="fileInfoLog" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <!--级别过滤器  过滤掉ERROR，其他接收-->
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>ERROR</level>
+            <onMatch>DENY</onMatch>
+            <onMismatch>ACCEPT</onMismatch>
+        </filter>
+        <encoder>
+            <pattern>
+                ${FILE_LOG_PATTERN}
+            </pattern>
+        </encoder>
+        <!--滚动策略-->
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!--路径-->
+            <fileNamePattern>
+                ${INFO_LOG_PATH}
+            </fileNamePattern>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+    </appender>
+
+    <appender name="fileErrorLog" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <!--&lt;!&ndash;级别过滤器  接收ERROR，其他过滤&ndash;&gt;-->
+        <!--<filter class="ch.qos.logback.classic.filter.LevelFilter">-->
+            <!--<level>ERROR</level>-->
+            <!--<onMatch>ACCEPT</onMatch>-->
+            <!--<onMismatch>DENY</onMismatch>-->
+        <!--</filter>-->
+        <!--临界值过滤器 过滤掉所有低于ERROR级别的日志-->
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>ERROR</level>
+        </filter>
+        <encoder>
+            <pattern>
+                ${FILE_LOG_PATTERN}
+            </pattern>
+        </encoder>
+        <!--滚动策略-->
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!--路径-->
+            <fileNamePattern>
+                ${ERROR_LOG_PATH}
+            </fileNamePattern>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+    </appender>
+
+    <root level="info">
+        <appender-ref ref="consoleLog"/>
+        <appender-ref ref="fileInfoLog"/>
+        <appender-ref ref="fileErrorLog"/>
+    </root>
+    <!--在这里配置或者在配置文件里配置 logging.level.com.zwq.logback.dao=debug-->
+    <!--<logger name="com.zwq.logback.dao" level="DEBUG"/>-->
+</configuration>
